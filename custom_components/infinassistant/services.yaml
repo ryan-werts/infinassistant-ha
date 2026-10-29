@@ -1,0 +1,170 @@
+send_notification:
+  name: Send Notification
+  description: Send a notification to the PineTime watch
+  fields:
+    title:
+      name: Title
+      description: Notification title
+      required: true
+      example: "Home Assistant Alert"
+      selector:
+        text:
+    message:
+      name: Message
+      description: Notification message content
+      required: true
+      example: "Front door opened"
+      selector:
+        text:
+          multiline: true
+    severity:
+      name: Severity
+      description: Notification severity level (info, warn, critical)
+      required: false
+      default: "info"
+      example: "warn"
+      selector:
+        select:
+          options:
+            - info
+            - warn
+            - critical
+    device_id:
+      name: Device ID
+      description: Target device ID (MAC address). If not specified, sends to all devices.
+      required: false
+      example: "AA:BB:CC:DD:EE:FF"
+      selector:
+        text:
+
+trigger_vibration:
+  name: Trigger Vibration
+  description: Trigger vibration/buzzer on the PineTime watch
+  fields:
+    duration_ms:
+      name: Duration
+      description: Vibration duration in milliseconds
+      required: false
+      default: 500
+      example: 1000
+      selector:
+        number:
+          min: 100
+          max: 5000
+          step: 100
+          unit_of_measurement: "ms"
+    pattern:
+      name: Pattern
+      description: Vibration pattern
+      required: false
+      default: "short"
+      example: "double"
+      selector:
+        select:
+          options:
+            - short
+            - long
+            - double
+            - triple
+    device_id:
+      name: Device ID
+      description: Target device ID (MAC address). If not specified, sends to all devices.
+      required: false
+      example: "AA:BB:CC:DD:EE:FF"
+      selector:
+        text:
+
+set_alarm:
+  name: Set Alarm
+  description: Set an alarm on the PineTime watch
+  fields:
+    hour:
+      name: Hour
+      description: Alarm hour (0-23)
+      required: true
+      example: 7
+      selector:
+        number:
+          min: 0
+          max: 23
+          mode: box
+    minute:
+      name: Minute
+      description: Alarm minute (0-59)
+      required: true
+      example: 30
+      selector:
+        number:
+          min: 0
+          max: 59
+          mode: box
+    enabled:
+      name: Enabled
+      description: Enable or disable the alarm
+      required: false
+      default: true
+      selector:
+        boolean:
+    days:
+      name: Days
+      description: Days of the week for recurring alarm (empty = one-time alarm)
+      required: false
+      default: []
+      example: ["mon", "wed", "fri"]
+      selector:
+        select:
+          options:
+            - mon
+            - tue
+            - wed
+            - thu
+            - fri
+            - sat
+            - sun
+          multiple: true
+    device_id:
+      name: Device ID
+      description: Target device ID (MAC address). If not specified, sends to all devices.
+      required: false
+      example: "AA:BB:CC:DD:EE:FF"
+      selector:
+        text:
+
+push_watchface_layout:
+  name: Push Watch Face Layout
+  description: Push custom watch face layout configuration to the watch
+  fields:
+    device_id:
+      name: Device ID
+      description: Target device ID (MAC address)
+      required: true
+      example: "AA:BB:CC:DD:EE:FF"
+      selector:
+        text:
+    layout:
+      name: Layout Configuration
+      description: Watch face layout JSON configuration
+      required: true
+      example: |
+        {
+          "version": 1,
+          "theme": {"background": "dark", "accent": "#FF5722"},
+          "header": {"time": {"format": "HH:mm", "align": "center"}, "presenceIcons": []},
+          "tiles": [{"label": "Living Room", "entity": "sensor.living_room_temperature", "color": "#FF5722"}],
+          "actions": [{"label": "Lights", "icon": "lightbulb", "color": "#FFB300", "actionType": "service_entity", "entityId": "light.living_room"}],
+          "statusBar": {"battery": true, "steps": true, "heartRate": false, "notifications": true, "bluetooth": true}
+        }
+      selector:
+        object:
+
+get_watchface:
+  name: Get Watch Face Layout
+  description: Retrieve the currently configured watch face layout for a device
+  fields:
+    device_id:
+      name: Device ID
+      description: Target device ID (MAC address)
+      required: true
+      example: "AA:BB:CC:DD:EE:FF"
+      selector:
+        text:

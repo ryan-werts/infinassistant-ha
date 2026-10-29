@@ -1,0 +1,73 @@
+name: Release
+
+# A plain version tag (for example 0.3.3) publishes a GitHub Release, which HACS reads. The tag must
+# equal "version" in custom_components/infinassistant/manifest.json, and the tests must pass first.
+
+on:
+  push:
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Check the tag and run the tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Tag must equal the manifest version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version=$(python3 -c "import json; print(json.load(open('custom_components/infinassistant/manifest.json', encoding='utf-8'))['version'])")
+          if [ "$TAG" != "$version" ]; then
+            echo "::error::tag '$TAG' is not the manifest version '$version' in custom_components/infinassistant/manifest.json"
+            exit 1
+          fi
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      # pytest-asyncio: pytest.ini sets asyncio_mode = auto, and without the plugin the async tests fail.
+      - run: pip install pytest pytest-asyncio cbor2 voluptuous
+      - name: pytest tests/
+        run: python -m pytest tests/ -q
+      - name: Install real Home Assistant
+        run: pip install pytest-homeassistant-custom-component==0.13.205
+      - name: pytest tests_ha/
+        run: python -m pytest tests_ha/ -q
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "20"
+      - name: Card tests and build
+        working-directory: www/infinassistant-watchface
+        run: |
+          set -euo pipefail
+          npm ci
+          npm test
+          npm run build
+
+  release:
+    name: Create the GitHub Release
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --verify-tag \
+            --title "InfinAssistant integration $TAG" \
+            --generate-notes

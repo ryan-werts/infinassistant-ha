@@ -1,0 +1,67 @@
+{
+  "_about": "Shared test data: every concept renders every scenario. Glyph lists are the owner's configured symbols in slot order; 'on' lists the slot indexes that are on/open. At most 10 glyphs are on at once. presence is 0-3 (three beacons). freezer: null (fine), '!17°' (warm for 20 min) or '!--' (sensor lost). stale: the live state is over 30 minutes old (status glyphs and temperatures grey).",
+  "glyphs": {
+    "doors":  ["F", "S", "M", "D", "D"],
+    "garage": ["?", "?"],
+    "lights": ["P", "K", "W"],
+    "media":  ["L", "H", "M", "?"],
+    "motion": ["M", "D", "K"]
+  },
+  "colours": {"doors": "#FF9500", "garage": "#FF453A", "lights": "#FFCC00", "media": "#BF5AF2", "motion": "#5AC8FA", "check": "#2F7D4F"},
+  "scenarios": [
+    {
+      "id": "none", "label": "Nothing on",
+      "time": "06:40", "date": "MON 19", "screen": "1/4",
+      "weather": {"icon": "f185", "temp": 58, "hi": 71, "lo": 52},
+      "events": [],
+      "on": {"doors": [], "garage": [], "lights": [], "media": [], "motion": []},
+      "thermostats": [68, 67], "presence": 0, "freezer": null, "stale": false,
+      "battery": 96, "steps": 120, "hr": 58
+    },
+    {
+      "id": "few", "label": "A few things",
+      "time": "08:15", "date": "MON 19", "screen": "1/4",
+      "weather": {"icon": "f185", "temp": 64, "hi": 74, "lo": 55},
+      "events": [{"start": "2.5h", "title": "Dentist"}],
+      "on": {"doors": [], "garage": [], "lights": [1], "media": [], "motion": [0]},
+      "thermostats": [70, 69], "presence": 1, "freezer": null, "stale": false,
+      "battery": 88, "steps": 1402, "hr": 66
+    },
+    {
+      "id": "medium", "label": "A medium amount",
+      "time": "17:52", "date": "TUE 20", "screen": "1/4",
+      "weather": {"icon": "f6c4", "temp": 71, "hi": 76, "lo": 58},
+      "events": [{"start": "38m", "title": "Soccer practice"}, {"start": "Wed 9:00", "title": "Team standup"}],
+      "on": {"doors": [1, 3], "garage": [0], "lights": [0, 1], "media": [0], "motion": [0, 1]},
+      "thermostats": [72, 70], "presence": 2, "freezer": null, "stale": false,
+      "battery": 54, "steps": 8231, "hr": 81
+    },
+    {
+      "id": "many", "label": "A lot on",
+      "time": "19:30", "date": "SAT 24", "screen": "1/4",
+      "weather": {"icon": "f740", "temp": 49, "hi": 55, "lo": 41},
+      "events": [{"start": "now", "title": "Birthday dinner at Gina's"}, {"start": "Sun 10:30", "title": "Costco run and propane refill"}],
+      "on": {"doors": [0, 1, 2, 3], "garage": [0], "lights": [0, 1, 2], "media": [0], "motion": [0]},
+      "thermostats": [74, 71], "presence": 3, "freezer": null, "stale": false,
+      "battery": 31, "steps": 14820, "hr": 92
+    },
+    {
+      "id": "alarm", "label": "Freezer alarm",
+      "time": "13:05", "date": "SUN 25", "screen": "1/4",
+      "weather": {"icon": "f0c2", "temp": 62, "hi": 66, "lo": 50},
+      "events": [{"start": "1.3h", "title": "Call mom"}],
+      "on": {"doors": [2], "garage": [], "lights": [1], "media": [1], "motion": [0, 2]},
+      "thermostats": [71, 70], "presence": 2, "freezer": "!17°", "stale": false,
+      "battery": 67, "steps": 6110, "hr": 74
+    },
+    {
+      "id": "stale", "label": "Out of touch (stale)",
+      "time": "22:47", "date": "WED 21", "screen": "1/4",
+      "weather": {"icon": "f185", "temp": 61, "hi": 74, "lo": 52},
+      "events": [{"start": "Thu 8:00", "title": "Dentist"}],
+      "on": {"doors": [0], "garage": [], "lights": [1, 2], "media": [], "motion": [1]},
+      "thermostats": [69, 68], "presence": 2, "freezer": null, "stale": true,
+      "battery": 22, "steps": 11204, "hr": 61
+    }
+  ]
+}

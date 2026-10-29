@@ -1,0 +1,21 @@
+{
+  "domain": "infinassistant",
+  "name": "InfinAssistant",
+  "after_dependencies": [
+    "frontend"
+  ],
+  "codeowners": [
+    "@ryan-werts"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http",
+    "webhook"
+  ],
+  "documentation": "https://github.com/ryan-werts/infinassistant-ha",
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/ryan-werts/infinassistant-ha",
+  "requirements": [],
+  "version": "0.3.5"
+}

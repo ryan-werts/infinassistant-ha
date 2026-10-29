@@ -1,0 +1,219 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up InfinAssistant",
+        "description": "Enter a device identifier for your PineTime watch (e.g., MAC address or friendly name). After setup, you'll receive a webhook URL and signing key to configure in your Android bridge app.",
+        "data": {
+          "device_id": "Device ID"
+        },
+        "data_description": {
+          "device_id": "Unique identifier for your PineTime watch (e.g., MAC address like AA:BB:CC:DD:EE:FF or a friendly name)"
+        }
+      },
+      "confirm_setup": {
+        "title": "Copy Your Webhook Credentials",
+        "description": "**IMPORTANT:** Copy the credentials below and scan (or paste) them into your Android bridge app.\n\n📋 **Webhook ID:** `{webhook_id}`\n\n🔗 **Full URL:** {webhook_url}\n\n🔑 **HMAC Secret (base64):** `{hmac_secret}`\n\n📷 **QR Payload (scan with bridge app):**\n```\n{qr_payload}\n```\n\nDevice ID: {device_id}{https_warning}\n\n⚠️ You can also find the webhook URL later in the sensor attributes (Developer Tools → States → any InfinAssistant sensor → Attributes → webhook_url)."
+      },
+      "confirm_discovery": {
+        "title": "Confirm PineTime Discovery",
+        "description": "A PineTime watch (Device ID: {device_id}) has been discovered on your network.\n\nWebhook URL: {webhook_url}\n\nConfirm to add this device to Home Assistant."
+      }
+    },
+    "error": {
+      "unknown": "Unexpected error occurred",
+      "cannot_connect": "Failed to connect to the device",
+      "invalid_device_id": "Invalid device ID format"
+    },
+    "abort": {
+      "already_configured": "Device with this ID is already configured",
+      "single_instance_allowed": "Only a single instance is allowed",
+      "no_webhook_url": "No webhook URL found in mDNS discovery announcement",
+      "invalid_webhook_url": "Invalid webhook URL format in mDNS discovery announcement"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "InfinAssistant Settings",
+        "description": "**Device ID:** {device_id}\n\n📋 **Webhook ID:** `{webhook_id}`\n\n🔗 **Full Webhook URL:** {webhook_url}\n\nAdjust rate-limiting and replay-window settings below, or check **Rotate signing key** to generate a new HMAC secret.",
+        "data": {
+          "rate_limit": "Rate limit (requests/minute)",
+          "replay_window": "Replay window (seconds)",
+          "rotate_key": "Rotate signing key"
+        },
+        "data_description": {
+          "rate_limit": "Maximum webhook requests per minute per device (30–120). Default: 60.",
+          "replay_window": "Maximum allowed age of a signed request in seconds (10–300). Default: 30.",
+          "rotate_key": "Check this box and save to generate a new HMAC signing key. The old key will remain valid for 60 minutes."
+        }
+      },
+      "rotate_key": {
+        "title": "Confirm Key Rotation",
+        "description": "Generating a new HMAC signing key will invalidate the current key after a 60-minute grace period.\n\nMake sure your bridge app is ready to receive the new key before confirming.",
+        "data": {
+          "confirm_rotate": "Yes, rotate the key"
+        }
+      },
+      "rotate_key_done": {
+        "title": "New Signing Key Generated",
+        "description": "Your new HMAC signing key has been generated.\n\n🔑 **New secret (base64):** `{new_secret}`\n\n📷 **QR Payload (scan with bridge app):**\n```\n{qr_payload}\n```\n\nThe old key will continue to be accepted for **{grace_minutes} minutes**. Update your bridge app before then."
+      }
+    }
+  },
+  "services": {
+      "send_notification": {
+        "name": "Send Notification",
+        "description": "Send a notification to the PineTime watch",
+        "fields": {
+          "title": {
+            "name": "Title",
+            "description": "Notification title (max 32 characters)"
+          },
+          "message": {
+            "name": "Message",
+            "description": "Notification message (max 128 characters)"
+          },
+          "severity": {
+            "name": "Severity",
+            "description": "Notification severity level (info, warn, critical)"
+          },
+          "device_id": {
+            "name": "Device ID",
+            "description": "Target device ID (optional, sends to all if omitted)"
+          }
+        }
+      },
+      "trigger_vibration": {
+        "name": "Trigger Vibration",
+        "description": "Trigger buzzer/vibration on the PineTime watch",
+        "fields": {
+          "pattern": {
+            "name": "Pattern",
+            "description": "Vibration pattern (short, long, double, triple)"
+          },
+          "duration_ms": {
+            "name": "Duration (ms)",
+            "description": "Duration in milliseconds (100-5000)"
+          },
+          "device_id": {
+            "name": "Device ID",
+            "description": "Target device ID (optional)"
+          }
+        }
+      },
+      "set_alarm": {
+        "name": "Set Alarm",
+        "description": "Set an alarm on the PineTime watch",
+        "fields": {
+          "hour": {
+            "name": "Hour",
+            "description": "Alarm hour (0-23)"
+          },
+          "minute": {
+            "name": "Minute",
+            "description": "Alarm minute (0-59)"
+          },
+          "enabled": {
+            "name": "Enabled",
+            "description": "Enable the alarm"
+          },
+          "days": {
+            "name": "Days",
+            "description": "Days to repeat (mon, tue, wed, thu, fri, sat, sun)"
+          },
+          "device_id": {
+            "name": "Device ID",
+            "description": "Target device ID (optional)"
+          }
+        }
+      },
+      "push_watchface_layout": {
+        "name": "Push Watch Face Layout",
+        "description": "Push a watch face layout configuration to the PineTime watch",
+        "fields": {
+          "device_id": {
+            "name": "Device ID",
+            "description": "Target device ID"
+          },
+          "layout": {
+            "name": "Layout",
+            "description": "Watch face layout JSON configuration"
+          }
+        }
+      },
+      "get_watchface": {
+        "name": "Get Watch Face",
+        "description": "Get the current watch face configuration for a device",
+        "fields": {
+          "device_id": {
+            "name": "Device ID",
+            "description": "Target device ID"
+          }
+        }
+      }
+    },
+  "entity": {
+    "sensor": {
+      "steps": {
+        "name": "Steps"
+      },
+      "heart_rate": {
+        "name": "Heart Rate"
+      },
+      "battery": {
+        "name": "Battery"
+      },
+      "motion_state": {
+        "name": "Motion State",
+        "state": {
+          "still": "Still",
+          "walking": "Walking",
+          "running": "Running",
+          "unknown": "Unknown"
+        }
+      },
+      "heart_rate_state": {
+        "name": "Heart Rate State"
+      },
+      "sleep_state": {
+        "name": "Sleep State",
+        "state": {
+          "awake": "Awake",
+          "light": "Light Sleep",
+          "deep": "Deep Sleep",
+          "unknown": "Unknown"
+        }
+      },
+      "last_sync": {
+        "name": "Last Sync"
+      }
+    },
+    "binary_sensor": {
+      "battery_charging": {
+        "name": "Battery Charging"
+      },
+      "connected": {
+        "name": "Connected"
+      }
+    }
+  },
+  "selector": {
+    "severity": {
+      "options": {
+        "info": "Info",
+        "warn": "Warning",
+        "critical": "Critical"
+      }
+    },
+    "vibration_pattern": {
+      "options": {
+        "none": "None",
+        "short": "Short",
+        "long": "Long",
+        "double": "Double",
+        "triple": "Triple"
+      }
+    }
+  }
+}

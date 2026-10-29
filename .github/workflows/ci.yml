@@ -1,0 +1,71 @@
+name: CI
+
+# Runs on every push and pull request. A pull request from a fork runs with a read-only token and no
+# secrets, because the trigger is the plain pull_request event.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  hassfest:
+    name: hassfest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: home-assistant/actions/hassfest@86d4564712fa02543c808e3a693dd04f9d3f8361 # master
+
+  hacs:
+    name: HACS validation
+    runs-on: ubuntu-latest
+    steps:
+      # The brands check is off: the integration has no entry in home-assistant/brands (open-source
+      # release plan, OQ-4).
+      - uses: hacs/action@d556e736723344f83838d08488c983a15381059a # 22.5.0
+        with:
+          category: integration
+          ignore: brands
+
+  tests:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      # pytest-asyncio: pytest.ini sets asyncio_mode = auto, and without the plugin the async tests fail.
+      - run: pip install pytest pytest-asyncio cbor2 voluptuous
+      - name: pytest tests/
+        run: python -m pytest tests/ -q
+
+      # tests/ runs against MagicMock stubs and cannot catch HA API drift, so tests_ha/ imports the
+      # real package. Linux-only: homeassistant.runner imports fcntl, which does not exist on Windows.
+      - name: Install real Home Assistant
+        run: pip install pytest-homeassistant-custom-component==0.13.205
+      - name: pytest tests_ha/
+        run: python -m pytest tests_ha/ -q
+
+  card:
+    name: Lovelace card
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: www/infinassistant-watchface
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
